@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Meadows.Scenes {
     public enum Scenes : int {
-        Splash, Menu, Count
+        Splash, Menu, MenuSettings, Count
     }
 
     public class Scene {
@@ -12,6 +12,10 @@ namespace Meadows.Scenes {
         public virtual void Destroy() { }
 
         public virtual void Update(GameTime dt) { }
+
+        public virtual Color Background() {
+            return Color.Black;
+        }
 
         public virtual void Draw(SpriteBatch batch, GameTime dt) { }
     }

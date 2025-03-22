@@ -3,12 +3,13 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System;
+using System.Diagnostics;
 
 namespace Meadows {
     public class Main : Game {
         private static readonly String Title = "Meadows";
         private static GraphicsDeviceManager Graphics;
-        private static readonly int[,] Dimensions = {
+        public static readonly int[,] Dimensions = {
             {768, 432}, {1344, 756}, {1536, 864},
         };
 
@@ -17,6 +18,7 @@ namespace Meadows {
         private static Scenes.Scene[] scenes;
         private RenderTarget2D renderTarget;
         private static Scenes.Scene scene;
+        public static int DSelected = 0;
         private SpriteBatch batch;
         private float aspectRatio;
         public static int Height;
@@ -50,9 +52,11 @@ namespace Meadows {
 
             Main.Contents = new ContentManager(this.Content.ServiceProvider, "Meadows.Content");
             Main.scenes = new Scenes.Scene[(int) Scenes.Scenes.Count];
+            Main.scenes[(int)Scenes.Scenes.MenuSettings] = new Scenes.MenuSettings(this);
             Main.scenes[(int)Scenes.Scenes.Splash] = new Scenes.Splash();
-            Main.scenes[(int)Scenes.Scenes.Menu] = new Scenes.Menu(Main.Graphics.GraphicsDevice);
-            Main.scene = Main.scenes[(int)Scenes.Scenes.Splash];
+            Main.scenes[(int)Scenes.Scenes.Menu] = new Scenes.Menu(this);
+            Main.scene = Main.scenes[(int)Scenes.Scenes.Menu];
+            this.Resolution(1);
             base.Initialize();
         }
 
@@ -79,44 +83,54 @@ namespace Meadows {
             return scaleRectangle;
         }
 
+        public void NextResolution() {
+            Main.DSelected = (Main.DSelected + 1) % Main.Dimensions.GetLength(0);
+            this.Resolution(Main.DSelected);
+        }
+
         private void Resolution(int index) {
             if ((index < 0) || (index >= Main.Dimensions.GetLength(0)))
                 return;
 
             if ((Main.Graphics is not null) && !Main.Graphics.IsFullScreen) {
-                Main.Graphics.PreferredBackBufferWidth = Main.Dimensions[index, 0];
                 Main.Graphics.PreferredBackBufferHeight = Main.Dimensions[index, 1];
-                Main.Height = Main.Dimensions[index, 1];
-                Main.Width = Main.Dimensions[index, 0];
-
+                Main.Graphics.PreferredBackBufferWidth = Main.Dimensions[index, 0];
                 Main.Graphics.ApplyChanges();
+                Main.DSelected = index;
                 this.renderScaleRectangle = this.GetScaleRectangle();
             }
         }
 
-        private void ToggleFullscreen() {
+        public bool ToggleFullscreen() {
             if (Main.Graphics is not null) {
                 if (Main.Graphics.IsFullScreen == true) {
                     Main.Graphics.IsFullScreen = false;
-                    this.Resolution(0);
+                    this.Resolution(Main.DSelected);
                 } else {
                     Main.Graphics.IsFullScreen = true;
                     Main.Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
                     Main.Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
                     Main.Graphics.ApplyChanges();
-                    Main.Height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-                    Main.Width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
                     this.renderScaleRectangle = this.GetScaleRectangle();
                 }
+
+                return Main.Graphics.IsFullScreen;
             }
+
+            return false;
+        }
+
+        public void Quit() {
+            Main.scene.Destroy();
+            Main.Contents.Unload();
+            this.Exit();
         }
 
         protected override void Update(GameTime dt) {
             if (this.IsActive == true) {
                 Utility.InputManager.Update();
                 if (Utility.InputManager.IsKeyPressed(Keys.Escape)) {
-                    Main.Contents.Unload();
-                    this.Exit();
+                    this.Quit();
                 }
 
                 Main.scene.Update(dt);
@@ -126,12 +140,13 @@ namespace Meadows {
         }
 
         public static void Switch(Scenes.Scenes scene) {
-            Main.scene = Main.scenes[(int)scene];
+            Main.scene = Main.scenes[(int) scene];
+            Main.scene.Load();
         }
 
         protected override void Draw(GameTime dt) {
             this.GraphicsDevice.SetRenderTarget(this.renderTarget);
-            this.GraphicsDevice.Clear(Color.Black);
+            this.GraphicsDevice.Clear(Main.scene.Background());
             Main.scene.Draw(batch, dt);
 
             this.GraphicsDevice.SetRenderTarget(null);

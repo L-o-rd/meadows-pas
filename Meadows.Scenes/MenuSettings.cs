@@ -4,11 +4,11 @@ using Microsoft.Xna.Framework;
 using System;
 
 namespace Meadows.Scenes {
-    public class Menu : Scene {
+    public class MenuSettings : Scene {
         private readonly string[] each = { "M", "e", "a", "d", "o", "w", "s" };
         private readonly string text = "Meadows";
         private readonly string[] options = {
-            "Play", "Settings", "Exit"
+            "Resolution: ", "Volume: ", "Screen: ", "Back"
         };
 
         private readonly Meadows.Main mref;
@@ -17,39 +17,52 @@ namespace Meadows.Scenes {
 
         private SpriteFont title, opt;
         private float bx, by, ts, dft;
+        private int select, volume;
         private Texture2D back;
         private float dx, dy;
-        private int select;
+        private bool screen;
         private float acc;
 
-        public Menu(Meadows.Main mref) {
+        private void ChangeResolution() {
+            mref.NextResolution();
+            this.options[0] = $"Resolution: {Main.Dimensions[Main.DSelected, 0]} x {Main.Dimensions[Main.DSelected, 1]}";
+        }
+
+        private void ChangeVolume() {
+            /* TODO! */
+        }
+
+        private void ChangeScreen() {
+            this.screen = mref.ToggleFullscreen();
+            this.options[2] = this.screen ? "Screen: Fullscreen" : "Screen: Windowed";
+        }
+
+        private void GoBack() {
+            Main.Switch(Scenes.Menu);
+        }
+
+        public MenuSettings(Meadows.Main mref) {
             this.actions = new Option[] {
-                this.Play,
-                this.Settings,
-                this.Quit
+                this.ChangeResolution,
+                this.ChangeVolume,
+                this.ChangeScreen,
+                this.GoBack
             };
 
             this.bx = this.by = -1f;
             this.dx = this.dy = -1f;
+            this.screen = false;
+            this.volume = 100;
             this.mref = mref;
-        }
-
-        private void Play() {
-            Main.Switch(Scenes.Splash);
-        }
-
-        private void Settings() {
-            Main.Switch(Scenes.MenuSettings);
-        }
-
-        private void Quit() {
-            this.mref.Quit();
         }
 
         public override void Load() {
             this.back = Main.Contents.Load<Texture2D>("Sprites/MenuBackground");
             this.title = Main.Contents.Load<SpriteFont>("Fonts/Logo");
             this.opt = Main.Contents.Load<SpriteFont>("Fonts/Option");
+            this.options[0] = $"Resolution: {Main.Dimensions[Main.DSelected, 0]} x {Main.Dimensions[Main.DSelected, 1]}";
+            this.options[1] = $"Volume: {this.volume}%";
+            this.options[2] = this.screen ? "Screen: Fullscreen" : "Screen: Windowed";
             this.select = 0;
             this.acc = 0f;
             this.ts = 1f;
@@ -70,7 +83,7 @@ namespace Meadows.Scenes {
             if ((this.by + this.dy) + this.back.Height <= Main.Height) this.dy = 1f;
             else if ((this.by + this.dy) > -1f) this.dy = -1f;
 
-            this.acc += (float) dt.ElapsedGameTime.TotalMilliseconds;
+            this.acc += (float)dt.ElapsedGameTime.TotalMilliseconds;
             if (this.acc >= 100f) {
                 this.bx += this.dx;
                 this.by += this.dy;
@@ -83,12 +96,26 @@ namespace Meadows.Scenes {
                 this.select = (((this.select - 1) % options.Length) + options.Length) % options.Length;
             }
 
-            if (Utility.InputManager.IsKeyPressed(Keys.Enter)) {
-                this.actions[this.select]();
+            if (this.select == 1 /* Volume */) {
+                if (Utility.InputManager.IsKeyPressed(Keys.Left)) {
+                    if (this.volume > 0) {
+                        this.volume -= 5;
+                        this.options[1] = $"Volume: {this.volume}%";
+                    }
+                } else if (Utility.InputManager.IsKeyPressed(Keys.Right)) {
+                    if (this.volume < 100) {
+                        this.volume += 5;
+                        this.options[1] = $"Volume: {this.volume}%";
+                    }
+                }
+            } else {
+                if (Utility.InputManager.IsKeyPressed(Keys.Enter)) {
+                    this.actions[this.select]();
+                }
             }
 
-            this.dft += (float) dt.ElapsedGameTime.TotalMilliseconds * 0.01f;
-            this.ts = 1.125f + (float) Math.Sin(this.dft * 0.5f) * 0.125f;
+            this.dft += (float)dt.ElapsedGameTime.TotalMilliseconds * 0.01f;
+            this.ts = 1.125f + (float)Math.Sin(this.dft * 0.5f) * 0.125f;
             base.Update(dt);
         }
 
@@ -109,17 +136,17 @@ namespace Meadows.Scenes {
                 size = this.opt.MeasureString(this.options[i]);
                 if (i == this.select) {
                     batch.DrawString(this.opt, this.options[i],
-                        new Vector2((float) Main.Width * 0.5f, 0.4f * Main.Height + py + size.Y * 0.5f),
+                        new Vector2((float)Main.Width * 0.5f, 0.3f * Main.Height + py + size.Y * 0.5f),
                             Color.PaleVioletRed, 0f, size * 0.5f, ts, SpriteEffects.None, 0f);
                 } else {
                     batch.DrawString(this.opt, this.options[i],
-                        new Vector2((float)(Main.Width - size.X) * 0.5f, 0.4f * Main.Height + py),
+                        new Vector2((float)(Main.Width - size.X) * 0.5f, 0.3f * Main.Height + py),
                             Color.FloralWhite);
                 }
 
                 py += size.Y + 0.05f * Main.Height;
             }
-            
+
             batch.End();
         }
     }
