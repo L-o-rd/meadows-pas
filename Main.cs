@@ -3,12 +3,11 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System;
-using System.Diagnostics;
 
 namespace Meadows {
     public class Main : Game {
         private static readonly String Title = "Meadows";
-        private static GraphicsDeviceManager Graphics;
+        public static GraphicsDeviceManager Graphics;
         public static readonly int[,] Dimensions = {
             {768, 432}, {1344, 756}, {1536, 864},
         };
@@ -55,6 +54,7 @@ namespace Meadows {
             Main.scenes[(int)Scenes.Scenes.MenuSettings] = new Scenes.MenuSettings(this);
             Main.scenes[(int)Scenes.Scenes.Splash] = new Scenes.Splash();
             Main.scenes[(int)Scenes.Scenes.Menu] = new Scenes.Menu(this);
+            Main.scenes[(int)Scenes.Scenes.Home] = new Scenes.Home(this);
             Main.scene = Main.scenes[(int)Scenes.Scenes.Menu];
             this.Resolution(1);
             base.Initialize();

@@ -27,6 +27,33 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Option.spritefont
 
+#begin Levels/Outside_Outside.csv
+/copy:Levels/Outside_Outside.csv
+
+#begin Levels/Outside_OutsideOver.csv
+/copy:Levels/Outside_OutsideOver.csv
+
+#begin Levels/Outside_Rocks.csv
+/copy:Levels/Outside_Rocks.csv
+
+#begin Levels/Outside_RocksOver.csv
+/copy:Levels/Outside_RocksOver.csv
+
+#begin Levels/Outside_Water.csv
+/copy:Levels/Outside_Water.csv
+
+#begin Sprites/Beach.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/Beach.png
+
 #begin Sprites/MenuBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -38,4 +65,40 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sprites/MenuBackground.png
+
+#begin Sprites/Player.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/Player.png
+
+#begin Sprites/Rocks.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/Rocks.png
+
+#begin Sprites/Water.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/Water.png
 

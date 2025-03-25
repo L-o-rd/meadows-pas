@@ -11,9 +11,9 @@ namespace Meadows.Scenes {
             "Play", "Settings", "Exit"
         };
 
-        private readonly Meadows.Main mref;
         private readonly Option[] actions;
         private delegate void Option();
+        private readonly Main mref;
 
         private SpriteFont title, opt;
         private float bx, by, ts, dft;
@@ -22,7 +22,7 @@ namespace Meadows.Scenes {
         private int select;
         private float acc;
 
-        public Menu(Meadows.Main mref) {
+        public Menu(Main mref) {
             this.actions = new Option[] {
                 this.Play,
                 this.Settings,
@@ -35,7 +35,7 @@ namespace Meadows.Scenes {
         }
 
         private void Play() {
-            Main.Switch(Scenes.Splash);
+            Main.Switch(Scenes.Home);
         }
 
         private void Settings() {

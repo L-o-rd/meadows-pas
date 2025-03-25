@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Meadows.Scenes {
     public enum Scenes : int {
-        Splash, Menu, MenuSettings, Count
+        Splash, Menu, MenuSettings, Home, Count
     }
 
     public class Scene {

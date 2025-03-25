@@ -11,9 +11,9 @@ namespace Meadows.Scenes {
             "Resolution: ", "Volume: ", "Screen: ", "Back"
         };
 
-        private readonly Meadows.Main mref;
         private readonly Option[] actions;
         private delegate void Option();
+        private readonly Main mref;
 
         private SpriteFont title, opt;
         private float bx, by, ts, dft;
@@ -41,7 +41,7 @@ namespace Meadows.Scenes {
             Main.Switch(Scenes.Menu);
         }
 
-        public MenuSettings(Meadows.Main mref) {
+        public MenuSettings(Main mref) {
             this.actions = new Option[] {
                 this.ChangeResolution,
                 this.ChangeVolume,
