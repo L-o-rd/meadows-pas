@@ -54,7 +54,7 @@ namespace Meadows {
             Main.scenes[(int)Scenes.Scenes.MenuSettings] = new Scenes.MenuSettings(this);
             Main.scenes[(int)Scenes.Scenes.Splash] = new Scenes.Splash();
             Main.scenes[(int)Scenes.Scenes.Menu] = new Scenes.Menu(this);
-            Main.scenes[(int)Scenes.Scenes.Home] = new Scenes.Home(this);
+            Main.scenes[(int)Scenes.Scenes.Home] = new Scenes.Home();
             Main.scene = Main.scenes[(int)Scenes.Scenes.Menu];
             this.Resolution(1);
             base.Initialize();
@@ -129,7 +129,8 @@ namespace Meadows {
         protected override void Update(GameTime dt) {
             if (this.IsActive == true) {
                 Utility.InputManager.Update();
-                if (Utility.InputManager.IsKeyPressed(Keys.Escape)) {
+                if (Utility.InputManager.IsKeyDown(Keys.LeftShift) &&
+                    Utility.InputManager.IsKeyPressed(Keys.Escape)) {
                     this.Quit();
                 }
 

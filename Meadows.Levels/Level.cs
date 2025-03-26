@@ -23,11 +23,13 @@ namespace Meadows.Levels {
         private Comparer<Entity> Sorter = new EntityOrder();
         public List<Entity>[] InTiles;
         public List<Tile[]> _layers;
+        public List<Tile> animated;
         private int width, height;
         public List<Entity> All;
         private Player player;
 
         public Level(int width, int height, Where where = Where.Outside) {
+            this.animated = new List<Tile>();
             this.All = new List<Entity>();
             _layers = new List<Tile[]>();
             this.height = height;
@@ -75,7 +77,7 @@ namespace Meadows.Levels {
             InTiles[x + y * width].Remove(e);
         }
 
-        public void Layer(String source, Sheet sheet) {
+        public Tile[] Layer(String source, Sheet sheet) {
             var reader = new StreamReader(source);
             var _tiles = new Tile[width * height];
             var line = String.Empty;
@@ -95,6 +97,7 @@ namespace Meadows.Levels {
             }
 
             _layers.Add(_tiles);
+            return _tiles;
         }
 
         public Tile GetTileLayer(Tile[] layer, int x, int y) {
@@ -107,9 +110,29 @@ namespace Meadows.Levels {
             return layer[x + y * width];
         }
 
+        public Tile GetLastTile(int x, int y) {
+            if (x < 0 || y < 0)
+                return Tiles.Tiles.Zeros[((x % 10 + 10) % 10) + ((y & 3 + 4) & 3) * 10];
+
+            if (x >= width || y >= height)
+                return Tiles.Tiles.Zeros[(x % 10) + (y & 3) * 10];
+
+            Tile tile = null;
+            for (int l = _layers.Count - 1; l >= 0; --l) {
+                tile = _layers[l][x + y * width];
+                if (tile is not null)
+                    return tile;
+            }
+
+            return null;
+        }
+
         public Tile GetTile(int x, int y) {
-            if (x < 0 || y < 0 || x >= width || y >= height)
-                return Tiles.Tiles.Zeros[0];
+            if (x < 0 || y < 0)
+                return Tiles.Tiles.Zeros[((x % 10 + 10) % 10) + ((y & 3 + 4) & 3) * 10];
+
+            if (x >= width || y >= height)
+                return Tiles.Tiles.Zeros[(x % 10) + (y & 3) * 10];
 
             Tile tile = null;
             foreach (var layer in _layers) {
@@ -181,6 +204,10 @@ namespace Meadows.Levels {
                         this.AddAt(xt, yt, e);
                     }
                 }
+            }
+
+            foreach (var tile in animated) {
+                Tiles.Tiles.AnimateWater(tile, dt);
             }
         }
 

@@ -14,6 +14,12 @@ namespace Meadows {
             this.unit = unit;
         }
 
+        public Rectangle Source(Vector2 point, int actual, Vector2 scl, int offx = 0, int offy = 0) {
+            var x = (int) (point.X + offx) * actual;
+            var y = (int) (point.Y + offy) * actual;
+            return new Rectangle(x, y, (int) (actual * scl.X), (int) (actual * scl.Y));
+        }
+
         public Rectangle Source(int id, int nunit, int actual) {
             var x = (id % width) * nunit;
             var y = (id / width) * nunit;
