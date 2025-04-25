@@ -37,11 +37,20 @@ namespace Meadows {
             var y = (id / width) << 5;
             return new Rectangle(x, y, Tiles.Tile.Width, Tiles.Tile.Height);
         }
+
+        public Rectangle Source2(int x, int y) {
+            return new Rectangle(x << 5, y << 5, Tiles.Tile.Width, Tiles.Tile.Height);
+        }
+
+        public Rectangle Source2(int x, int y, int actual) {
+            return new Rectangle(x << 5, y << 5, actual, actual);
+        }
     }
 
     public class Sheets {
         public static readonly Sheet Outside = new Sheet("Sprites/Beach", 32);
         public static readonly Sheet Water = new Sheet("Sprites/Water", 32);
         public static readonly Sheet Rocks = new Sheet("Sprites/Rocks", 32);
+        public static readonly Sheet Trees = new Sheet("Sprites/Trees", 32);
     }
 }

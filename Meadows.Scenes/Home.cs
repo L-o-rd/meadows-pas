@@ -24,6 +24,8 @@ namespace Meadows.Scenes {
         private int select = 0;
         private float ts, dft;
 
+        private readonly static Vector2 BushBot = new Vector2(12, 9);
+        private readonly static Vector2 BushTop = new Vector2(9, 4);
         private readonly Texture2D whole;
         private Player player;
         private State state;
@@ -68,6 +70,14 @@ namespace Meadows.Scenes {
             this.level.Add(player);
             this.level.Add(new Tree(823, 5 * 32, Sheets.Outside, (int) (6.5f * 32), (int) (29.85f * 32)));
             this.level.Add(new Tree(22, 5 * 32, Sheets.Outside, (int) (3.85f * 32), (int)(24.85f * 32), 0.375f));
+
+            Random rng = new Random(Environment.TickCount);
+            for (var x = BushTop.X; x < BushBot.X; ++x) {
+                for (var y = BushTop.Y; y < BushBot.Y; ++y) {
+                    if (rng.NextDouble() < 0.75)
+                        this.level.Add(new Bush(2, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
+                }
+            }
         }
 
         public override void Load() {

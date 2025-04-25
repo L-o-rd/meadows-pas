@@ -6,7 +6,6 @@ namespace Meadows.Entities {
         private readonly Rectangle source;
         private readonly float _ox, _oy;
         private readonly Sheet _sheet;
-        private readonly int size;
 
         public Tree(int id, int size, Sheet sheet, int x = 0, int y = 0, float ox = 0.45f, float oy = 0.95f) {
             this.source = sheet.Source(id, Tiles.Tile.Width, size);
@@ -14,7 +13,6 @@ namespace Meadows.Entities {
             this._ox = size * ox;
             this._oy = size * oy;
             this._sheet = sheet;
-            this.size = size;
             this.x = x;
             this.y = y;
         }

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Meadows.Levels;
 using System;
+using Meadows.Items;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Meadows.Entities {
     public abstract class Entity {
+        public static readonly Random RNG = new Random((int) DateTime.Now.Ticks);
+        public bool Removed { get; set; }
         public int xr = 5, yr = 5;
         protected Level level;
-        public bool Removed;
         public int x, y;
 
         public void Level(Level level) {
@@ -16,9 +19,15 @@ namespace Meadows.Entities {
         }
 
         public virtual void Update(GameTime dt) { }
+        public virtual void TouchItem(EItem ie) { }
         protected virtual void TouchedBy(Entity e) { }
         public virtual void Draw(SpriteBatch batch) { }
         public virtual bool CanSwim() { return false; }
+        public virtual void Hurt(Level level, Mob mob, int damage, int direction) {}
+
+        public virtual bool Interact(Player player, Item item, int direction) {
+            return item.Interact(player, this, direction);
+        }
 
         public virtual bool Blocks(Entity e) {
             return false;
