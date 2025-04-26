@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Meadows.Items;
 using System;
 using System.Text;
+using Meadows.Utility;
 
 namespace Meadows.Entities {
     public class Player : Mob {
@@ -99,40 +100,42 @@ namespace Meadows.Entities {
             this.speed = 2;
         }
 
-        public override void TouchItem(EItem ie) {
-            ie.Take(this);
+        public override void TouchItem(EItem ie, GameTime dt) {
+            ie.Take(this, dt);
             this.inventory.Add(ie.item);
         }
 
-        private void Hurt(int x0, int y0, int x1, int y1) {
+        private void Hurt(GameTime dt, int x0, int y0, int x1, int y1) {
             List<Entity> entities = level.GetEntities(x0, y0, x1, y1);
             for (int i = 0; i < entities.Count; ++i) {
                 var e = entities[i];
                 if (e != this) {
-                    if (inventory.Items.Count <= activeSlot) e.Hurt(this.level, this, RNG.Next(3) + 1, (int)_dir);
+                    if (inventory.Items.Count <= activeSlot) e.Hurt(this.level, this, RNG.Next(3) + 1, (int) _dir);
                     else {
                         var item = inventory.Items[activeSlot];
                         if (item is Tool t) e.Hurt(this.level, this, RNG.Next(3) + t.BaseDamage, (int)_dir);
                         else e.Hurt(this.level, this, RNG.Next(3) + 1, (int)_dir);
                     }
+
+                    Sound.Play(dt, "Hit", pitch: -.5f, cooldown: 0.05f);
                 }
             }
         }
 
-        private void Attack() {
+        private void Attack(GameTime dt) {
             int yo = -2;
             if ((this.inventory.Items.Count <= activeSlot) || this.inventory.Items[activeSlot].CanAttack()) {
                 int range = 32;
-                if (_dir == Direction.Down) Hurt(x - 16, y + 8 + yo, x + 16, y + range + yo);
-                if (_dir == Direction.Up) Hurt(x - 16, y - range + yo, x + 16, y - 8 + yo);
-                if (_dir == Direction.Right) Hurt(x + 8, y - 16 + yo, x + range, y + 16 + yo);
-                if (_dir == Direction.Left) Hurt(x - range, y - 16 + yo, x - 8, y + 16 + yo);
+                if (_dir == Direction.Down) Hurt(dt, x - 16, y + 8 + yo, x + 16, y + range + yo);
+                if (_dir == Direction.Up) Hurt(dt, x - 16, y - range + yo, x + 16, y - 8 + yo);
+                if (_dir == Direction.Right) Hurt(dt, x + 8, y - 16 + yo, x + range, y + 16 + yo);
+                if (_dir == Direction.Left) Hurt(dt, x - range, y - 16 + yo, x - 8, y + 16 + yo);
             } else {
                 int range = 28;
-                if ((_dir == Direction.Down) && Interact(x - 16, y + 8 + yo, x + 16, y + range + yo)) return;
-                if ((_dir == Direction.Up) && Interact(x - 16, y - range + yo, x + 16, y - 8 + yo)) return;
-                if ((_dir == Direction.Right) && Interact(x + 8, y - 16 + yo, x + range, y + 16 + yo)) return;
-                if ((_dir == Direction.Left) && Interact(x - range, y - 16 + yo, x - 8, y + 16 + yo)) return;
+                if ((_dir == Direction.Down) && Interact(dt, x - 16, y + 8 + yo, x + 16, y + range + yo)) return;
+                if ((_dir == Direction.Up) && Interact(dt, x - 16, y - range + yo, x + 16, y - 8 + yo)) return;
+                if ((_dir == Direction.Right) && Interact(dt, x + 8, y - 16 + yo, x + range, y + 16 + yo)) return;
+                if ((_dir == Direction.Left) && Interact(dt, x - range, y - 16 + yo, x - 8, y + 16 + yo)) return;
 
                 int r = range;
                 int xt = x >> 5;
@@ -144,7 +147,9 @@ namespace Meadows.Entities {
 
                 if (level.InBounds(xt, yt)) {
                     var item = inventory.Items[activeSlot];
-                    _ = item.InteractOn(level.GetTile(xt, yt), level, xt, yt, this, (int) _dir);
+                    if (item.InteractOn(level.GetTile(xt, yt), level, xt, yt, this, (int) _dir))
+                        Sound.Play(dt, "Hit", pitch: -.5f, cooldown: 0.05f);
+
                     if (item.Depleted()) {
                         inventory.Items.Remove(item);
                     }
@@ -152,12 +157,14 @@ namespace Meadows.Entities {
             }
         }
 
-        private bool Interact(int x0, int y0, int x1, int y1) {
+        private bool Interact(GameTime dt, int x0, int y0, int x1, int y1) {
             List<Entity> entities = level.GetEntities(x0, y0, x1, y1);
             for (int i = 0; i < entities.Count; ++i) {
                 var e = entities[i];
-                if ((e != this) && (e.Interact(this, inventory.Items[activeSlot], (int) this._dir)))
+                if ((e != this) && (e.Interact(this, inventory.Items[activeSlot], (int)this._dir))) {
+                    Sound.Play(dt, "Hit", pitch: -.5f, cooldown: 0.05f);
                     return true;
+                }
             }
 
             return false;
@@ -180,6 +187,7 @@ namespace Meadows.Entities {
                         level.Add(new BitParticle(x, y, Color.LightGray));
                         level.Add(new BitParticle(x, y, Color.LightGray));
                         level.Add(new BitParticle(x, y, Color.LightGray));
+                        Sound.Play(dt, "Hit", pitch: -.25f, cooldown: 0.05f);
                     }
 
                     this.speed = Player.RunningSpeed;
@@ -212,14 +220,14 @@ namespace Meadows.Entities {
                 xa += speed;
             }
 
-            this.Move(xa, ya);
+            this.Move(xa, ya, dt);
             if (this.state == State.Idle) {
                 if ((xa != 0) || (ya != 0))
                     this.state = State.Walking;
 
                 if (Utility.InputManager.IsKeyPressed(Keys.Space)) {
                     this.state = State.Attacking;
-                    Attack();
+                    Attack(dt);
                 }
                 
                 if (Utility.InputManager.IsKeyPressed(Keys.Q)) {

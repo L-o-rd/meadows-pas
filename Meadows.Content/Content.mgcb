@@ -49,6 +49,30 @@
 #begin Levels/Outside_Water.csv
 /copy:Levels/Outside_Water.csv
 
+#begin Sounds/Collect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Collect.wav
+
+#begin Sounds/Confirm.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Confirm.wav
+
+#begin Sounds/Hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Hit.wav
+
+#begin Sounds/Select.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Select.wav
+
 #begin Sprites/Beach.png
 /importer:TextureImporter
 /processor:TextureProcessor

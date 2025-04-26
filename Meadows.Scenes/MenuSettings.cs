@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System;
+using Meadows.Utility;
 
 namespace Meadows.Scenes {
     public class MenuSettings : Scene {
@@ -29,7 +30,7 @@ namespace Meadows.Scenes {
         }
 
         private void ChangeVolume() {
-            /* TODO! */
+            Sound.SetVolume(volume / 100.0f);
         }
 
         private void ChangeScreen() {
@@ -101,15 +102,20 @@ namespace Meadows.Scenes {
                     if (this.volume > 0) {
                         this.volume -= 5;
                         this.options[1] = $"Volume: {this.volume}%";
+                        Sound.Play(dt, "Confirm", pitch: -.5f, cooldown: 0.05f);
+                        ChangeVolume();
                     }
                 } else if (Utility.InputManager.IsKeyPressed(Keys.Right)) {
                     if (this.volume < 100) {
                         this.volume += 5;
                         this.options[1] = $"Volume: {this.volume}%";
+                        Sound.Play(dt, "Confirm", pitch: -.5f, cooldown: 0.05f);
+                        ChangeVolume();
                     }
                 }
             } else {
                 if (Utility.InputManager.IsKeyPressed(Keys.Enter)) {
+                    Sound.Play(dt, "Confirm", pitch: -.5f, cooldown: 0.05f);
                     this.actions[this.select]();
                 }
             }

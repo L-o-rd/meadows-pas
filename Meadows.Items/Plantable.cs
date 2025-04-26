@@ -9,7 +9,6 @@ namespace Meadows.Items {
         private readonly Rectangle[] phases;
         private readonly Rectangle _base;
         private readonly int column;
-        private readonly Type type;
         public readonly int Ticks;
 
         public Plantable(String name, int nr, int ticks) : base(name, nr) {

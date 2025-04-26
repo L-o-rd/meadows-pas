@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System;
+using Meadows.Utility;
 
 namespace Meadows.Scenes {
     public class Menu : Scene {
@@ -48,8 +49,10 @@ namespace Meadows.Scenes {
 
         public override void Load() {
             this.back = Main.Contents.Load<Texture2D>("Sprites/MenuBackground");
+            Sound.Load(Main.Contents, "Confirm", "Sounds/Confirm", 20);
             this.title = Main.Contents.Load<SpriteFont>("Fonts/Logo");
             this.opt = Main.Contents.Load<SpriteFont>("Fonts/Option");
+            Sound.Load(Main.Contents, "Select", "Sounds/Select", 20);
             this.select = 0;
             this.acc = 0f;
             this.ts = 1f;
@@ -84,6 +87,7 @@ namespace Meadows.Scenes {
             }
 
             if (Utility.InputManager.IsKeyPressed(Keys.Enter)) {
+                Sound.Play(dt, "Confirm", pitch: -.5f, cooldown: 0.05f);
                 this.actions[this.select]();
             }
 

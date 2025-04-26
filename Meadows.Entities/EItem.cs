@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Meadows.Items;
+using Meadows.Utility;
 
 namespace Meadows.Entities {
     public class EItem : Entity {
@@ -51,7 +52,7 @@ namespace Meadows.Entities {
             int ny = (int) yy;
             int expectedx = nx - x;
             int expectedy = ny - y;
-            Move(nx - x, ny - y);
+            Move(nx - x, ny - y, dt);
             int gotx = x - ox;
             int goty = y - oy;
             xx += gotx - expectedx;
@@ -66,14 +67,14 @@ namespace Meadows.Entities {
             item.Draw(batch, this.x - 10, this.y - 10 - (int) (zz), Color.Wheat);
         }
 
-        protected override void TouchedBy(Entity e) {
+        protected override void TouchedBy(Entity e, GameTime dt) {
             if (Removed) return;
             if (ticks > 30)
-                e.TouchItem(this);
+                e.TouchItem(this, dt);
         }
 
-        public void Take(Player player) {
-            // TODO: add sound.
+        public void Take(Player player, GameTime dt) {
+            Sound.Play(dt, "Collect", pitch: -.5f, cooldown: 0.05f);
             item.OnTake(this);
             Removed = true;
         }

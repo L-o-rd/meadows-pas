@@ -19,8 +19,8 @@ namespace Meadows.Entities {
         }
 
         public virtual void Update(GameTime dt) { }
-        public virtual void TouchItem(EItem ie) { }
-        protected virtual void TouchedBy(Entity e) { }
+        public virtual void TouchItem(EItem ie, GameTime dt) { }
+        protected virtual void TouchedBy(Entity e, GameTime dt) { }
         public virtual void Draw(SpriteBatch batch) { }
         public virtual bool CanSwim() { return false; }
         public virtual void Hurt(Level level, Mob mob, int damage, int direction) {}
@@ -37,11 +37,11 @@ namespace Meadows.Entities {
             return !(x + xr < x0 || y + yr < y0 || x - xr > x1 || y - yr > y1);
         }
 
-        public virtual bool Move(int xa, int ya) {
+        public virtual bool Move(int xa, int ya, GameTime dt) {
             if (xa != 0 || ya != 0) {
                 var stopped = true;
-                if (xa != 0 && _Move(xa, 0)) stopped = false;
-                if (ya != 0 && _Move(0, ya)) stopped = false;
+                if (xa != 0 && _Move(xa, 0, dt)) stopped = false;
+                if (ya != 0 && _Move(0, ya, dt)) stopped = false;
                 if (!stopped) {
                     int xt = x >> 5;
                     int yt = y >> 5;
@@ -54,7 +54,7 @@ namespace Meadows.Entities {
             return true;
         }
 
-        protected bool _Move(int xa, int ya) {
+        protected bool _Move(int xa, int ya, GameTime dt) {
             if (xa != 0 && ya != 0) 
                 throw new ArgumentException($"_Move({xa}, {ya})!");
 
@@ -88,7 +88,7 @@ namespace Meadows.Entities {
             for (int i = 0; i < isInside.Count; ++i) {
                 var e = isInside[i];
                 if (e == this) continue;
-                e.TouchedBy(this);
+                e.TouchedBy(this, dt);
             }
 
             isInside.RemoveAll(item => wasInside.Contains(item));

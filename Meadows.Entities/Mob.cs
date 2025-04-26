@@ -12,7 +12,7 @@ namespace Meadows.Entities {
             base.Update(dt);
         }
 
-        public override bool Move(int xa, int ya) {
+        public override bool Move(int xa, int ya, GameTime dt) {
             if (xa != 0 || ya != 0) {
                 if (xa < 0) _dir = Direction.Left;
                 if (xa > 0) _dir = Direction.Right;
@@ -20,7 +20,7 @@ namespace Meadows.Entities {
                 if (ya > 0) _dir = Direction.Down;
             }
 
-            return base.Move(xa, ya);
+            return base.Move(xa, ya, dt);
         }
     }
 }

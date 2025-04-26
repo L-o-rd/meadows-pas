@@ -5,6 +5,7 @@ using Meadows.Entities;
 using Meadows.Levels;
 using System;
 using Meadows.Items;
+using Meadows.Utility;
 
 namespace Meadows.Scenes {
     public class Home : Scene {
@@ -44,8 +45,10 @@ namespace Meadows.Scenes {
         private void GenerateBushes(Random rng, Vector2 top, Vector2 bot) {
             for (var x = top.X; x < bot.X; ++x) {
                 for (var y = top.Y; y < bot.Y; ++y) {
-                    if (rng.NextDouble() < 0.75)
-                        this.level.Add(new Bush(2, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
+                    var prob = rng.NextDouble();
+                    if (rng.NextDouble() < 0.35) this.level.Add(new Bush(8, 17, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
+                    else if (rng.NextDouble() < 0.55) this.level.Add(new Bush(4, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
+                    else if (rng.NextDouble() < 0.75) this.level.Add(new Bush(2, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
                 }
             }
         }
@@ -92,6 +95,8 @@ namespace Meadows.Scenes {
         public override void Load() {
             this.title = Main.Contents.Load<SpriteFont>("Fonts/Logo");
             this.opt = Main.Contents.Load<SpriteFont>("Fonts/Option");
+            Sound.Load(Main.Contents, "Collect", "Sounds/Collect", 20);
+            Sound.Load(Main.Contents, "Hit", "Sounds/Hit", 20);
             this.state = State.Playing;
             this.select = 0;
             this.ts = 1f;
