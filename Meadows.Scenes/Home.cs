@@ -4,14 +4,17 @@ using Microsoft.Xna.Framework;
 using Meadows.Entities;
 using Meadows.Levels;
 using System;
+using Meadows.Items;
 
 namespace Meadows.Scenes {
     public class Home : Scene {
         private enum State : int {
-            Playing = 0,
-            Paused  = 1,
+            Playing     = 0,
+            Paused      = 1,
+            Inventory   = 2,
         }
 
+        private readonly string invText = "Inventory";
         private readonly string text = "Paused";
         private readonly Option[] actions;
         private delegate void Option();
@@ -20,12 +23,11 @@ namespace Meadows.Scenes {
             "Continue", "Main Menu"
         };
 
+        private int select = 0, invsel = 0;
         private SpriteFont title, opt;
-        private int select = 0;
+        private float its, idft;
         private float ts, dft;
 
-        private readonly static Vector2 BushBot = new Vector2(12, 9);
-        private readonly static Vector2 BushTop = new Vector2(9, 4);
         private readonly Texture2D whole;
         private Player player;
         private State state;
@@ -37,6 +39,15 @@ namespace Meadows.Scenes {
 
         private void OptBackMenu() {
             Main.Switch(Scenes.Menu);
+        }
+
+        private void GenerateBushes(Random rng, Vector2 top, Vector2 bot) {
+            for (var x = top.X; x < bot.X; ++x) {
+                for (var y = top.Y; y < bot.Y; ++y) {
+                    if (rng.NextDouble() < 0.75)
+                        this.level.Add(new Bush(2, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
+                }
+            }
         }
 
         public Home() {
@@ -70,14 +81,12 @@ namespace Meadows.Scenes {
             this.level.Add(player);
             this.level.Add(new Tree(823, 5 * 32, Sheets.Outside, (int) (6.5f * 32), (int) (29.85f * 32)));
             this.level.Add(new Tree(22, 5 * 32, Sheets.Outside, (int) (3.85f * 32), (int)(24.85f * 32), 0.375f));
+            this.level.Add(new EItem(Tools.Sickle, (int) (15.5 * Tiles.Tile.Width), (int) (20.5 * Tiles.Tile.Height)));
+            this.level.Add(new EItem(Tools.Shovel, (int) (14.5 * Tiles.Tile.Width), (int) (21.5 * Tiles.Tile.Height)));
 
             Random rng = new Random(Environment.TickCount);
-            for (var x = BushTop.X; x < BushBot.X; ++x) {
-                for (var y = BushTop.Y; y < BushBot.Y; ++y) {
-                    if (rng.NextDouble() < 0.75)
-                        this.level.Add(new Bush(2, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
-                }
-            }
+            GenerateBushes(rng, new Vector2(11, 4), new Vector2(28, 13));
+            GenerateBushes(rng, new Vector2(15, 14), new Vector2(28, 17));
         }
 
         public override void Load() {
@@ -103,11 +112,17 @@ namespace Meadows.Scenes {
         public override void Update(GameTime dt) {
             base.Update(dt);
             if (Utility.InputManager.IsKeyPressed(Keys.Escape)) {
-                this.state = (State) ((int) this.state ^ 1);
+                if (this.state == State.Playing || this.state == State.Paused) this.state = (State)((int)this.state ^ 1);
+                else this.state = State.Playing;
+            }
+
+            if (Utility.InputManager.IsKeyPressed(Keys.I) &&
+                (this.state == State.Playing || this.state == State.Inventory)) {
+                this.state = this.state == State.Playing ? State.Inventory : State.Playing;
             }
 
             if (this.state == State.Playing) this.level.Update(dt);
-            else {
+            else if (this.state == State.Paused) {
                 if (Utility.InputManager.IsKeyPressed(Keys.Down)) {
                     this.select = (this.select + 1) % options.Length;
                 } else if (Utility.InputManager.IsKeyPressed(Keys.Up)) {
@@ -120,6 +135,25 @@ namespace Meadows.Scenes {
 
                 this.dft += (float)dt.ElapsedGameTime.TotalMilliseconds * 0.01f;
                 this.ts = 1.125f + (float)Math.Sin(this.dft * 0.5f) * 0.125f;
+            } else { /* State.Inventory */
+                var len = player.inventory.Items.Count;
+                if (len > 0) {
+                    if (Utility.InputManager.IsKeyPressed(Keys.Down)) {
+                        this.invsel = (this.invsel + 1) % len;
+                    } else if (Utility.InputManager.IsKeyPressed(Keys.Up)) {
+                        this.invsel = (((this.invsel - 1) % len) + len) % len;
+                    }
+
+                    if (Utility.InputManager.IsKeyPressed(Keys.Enter)) {
+                        var inv = player.inventory.Items;
+                        var temp = inv[0];
+                        inv[0] = inv[this.invsel];
+                        inv[this.invsel] = temp;
+                    }
+                }
+
+                this.idft += (float) dt.ElapsedGameTime.TotalMilliseconds * 0.01f;
+                this.its = 1.125f + (float) Math.Sin(this.idft * 0.5f) * 0.125f;
             }
         }
 
@@ -128,6 +162,7 @@ namespace Meadows.Scenes {
             var oy = (this.player.y - (Main.Height >> 1));
             var ox = (this.player.x - (Main.Width >> 1));
             this.level.Draw(batch, ox, oy);
+            this.player.inventory.DrawHotbars(batch, player.activeSlot);
             if (state == State.Paused) {
                 batch.Draw(whole, new Rectangle(0, 0, Main.Width, Main.Height), Color.Black * 0.35f);
                 var size = this.title.MeasureString(this.text);
@@ -147,6 +182,54 @@ namespace Meadows.Scenes {
                     }
 
                     py += size.Y + 0.075f * Main.Height;
+                }
+            } else if (state == State.Inventory) {
+                batch.Draw(whole, new Rectangle(0, 0, Main.Width, Main.Height), Color.Black * 0.35f);
+                var size = this.title.MeasureString(this.invText);
+                var position = new Vector2((float) (Main.Width - size.X) * 0.5f, 0.1f * Main.Height);
+                batch.DrawString(this.title, this.invText, position, Color.Wheat);
+                if (this.invsel < 3) {
+                    var py = 0f;
+                    for (int i = 0; i < 3; ++i) {
+                        if (i >= player.inventory.Items.Count) break;
+                        var item = player.inventory.Items[i];
+                        var str = $"{i + 1}. {item.Name}";
+                        if (item is ResourceItem res) str = $"{str} ({res.Count})";
+                        size = this.opt.MeasureString(str);
+                        if (i == this.invsel) {
+                            batch.DrawString(this.opt, str,
+                                new Vector2((float)Main.Width * 0.5f, 0.4f * Main.Height + py + size.Y * 0.5f),
+                                    Color.PaleVioletRed, 0f, size * 0.5f, its, SpriteEffects.None, 0f);
+                        } else {
+                            batch.DrawString(this.opt, str,
+                                new Vector2((float)(Main.Width - size.X) * 0.5f, 0.4f * Main.Height + py),
+                                    Color.FloralWhite);
+                        }
+
+                        py += size.Y + 0.075f * Main.Height;
+                    }
+                } else {
+                    var st = this.invsel - 2;
+                    var mx = this.invsel;
+                    var py = 0f;
+                    for (int i = st; i <= mx; ++i) {
+                        if (i >= player.inventory.Items.Count) break;
+                        var item = player.inventory.Items[i];
+                        var str = $"{i + 1}. {item.Name}";
+                        if (item is ResourceItem res) str = $"{str} ({res.Count})";
+                        size = this.opt.MeasureString(str);
+                        if (i == this.invsel) {
+                            batch.DrawString(this.opt, str,
+                                new Vector2((float)Main.Width * 0.5f, 0.4f * Main.Height + py + size.Y * 0.5f),
+                                    Color.PaleVioletRed, 0f, size * 0.5f, its, SpriteEffects.None, 0f);
+                        } else {
+                            batch.DrawString(this.opt, str,
+                                new Vector2((float)(Main.Width - size.X) * 0.5f, 0.4f * Main.Height + py),
+                                    Color.FloralWhite);
+                        }
+
+                        py += size.Y + 0.075f * Main.Height;
+                    }
                 }
             }
 

@@ -23,8 +23,8 @@ namespace Meadows.Items {
     public static class Resources {
         public static SpriteFont Particle = Main.Contents.Load<SpriteFont>("Fonts/TextParticle");
         public readonly static Sheet Sheet = new Sheet("Sprites/Resources", 32);
-        public static Resource Potato = new Plantable("Potato", 0);
-        public static Resource Carrot = new Plantable("Carrot", 6);
-        public static Resource Beetroot = new Plantable("Beetroot", 9);
+        public static Resource Potato = new Plantable("Potato", 0, 60 * 5);
+        public static Resource Carrot = new Plantable("Carrot", 6, 60 * 5);
+        public static Resource Beetroot = new Plantable("Beetroot", 9, 60 * 5);
     }
 }

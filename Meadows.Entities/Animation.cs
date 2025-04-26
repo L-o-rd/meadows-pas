@@ -38,6 +38,16 @@ namespace Meadows.Entities {
             }
         }
 
+        public void Reset() {
+            this.counter = 0f;
+            this.once = false;
+            this.frame = 0;
+        }
+
+        public bool Completed() {
+            return this.once;
+        }
+
         public void DrawDirected(SpriteBatch batch, Vector2 at, int dir = 0) {
             batch.Draw(this._sheet.Texture, at, this._sheet.Source(this.corner, this.unit, scale, this.frame, dir), Color.White);
         }

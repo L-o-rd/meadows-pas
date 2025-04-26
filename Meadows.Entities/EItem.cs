@@ -8,7 +8,7 @@ namespace Meadows.Entities {
         public double xx, yy, zz;
         private int lifeTime;
         private int ticks;
-        private Item item;
+        public Item item;
 
         public EItem(Item item, int x, int y) {
             this.item = item;
@@ -67,6 +67,7 @@ namespace Meadows.Entities {
         }
 
         protected override void TouchedBy(Entity e) {
+            if (Removed) return;
             if (ticks > 30)
                 e.TouchItem(this);
         }

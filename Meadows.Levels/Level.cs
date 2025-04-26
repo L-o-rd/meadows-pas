@@ -41,6 +41,15 @@ namespace Meadows.Levels {
                 this.InTiles[i] = new List<Entity>();
         }
 
+        public bool InBounds(int xt, int yt) {
+            return (xt >= 0) && (yt >= 0) && (xt < this.width) && (yt < this.height);
+        }
+
+        public bool Occupied(int xt, int yt) {
+            if (!InBounds(xt, yt)) return true;
+            return InTiles[xt + yt * width].Count > 0;
+        }
+
         public void Add(Entity e) {
             if (e is Player)
                 this.player = e as Player;
