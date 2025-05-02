@@ -19,6 +19,8 @@ namespace Meadows.Scenes {
         private readonly string text = "Paused";
         private readonly Option[] actions;
         private delegate void Option();
+        private TimeSpan currentTime = new TimeSpan(6, 0, 0); 
+        private const double daySpeed = 180.0; 
 
         private readonly string[] options = {
             "Continue", "Main Menu"
@@ -115,6 +117,11 @@ namespace Meadows.Scenes {
         }
 
         public override void Update(GameTime dt) {
+            currentTime += TimeSpan.FromMinutes(dt.ElapsedGameTime.TotalSeconds * (24 * 60 / daySpeed));
+
+            if (currentTime.TotalHours >= 24)
+                currentTime -= TimeSpan.FromHours(24);
+
             base.Update(dt);
             if (Utility.InputManager.IsKeyPressed(Keys.Escape)) {
                 if (this.state == State.Playing || this.state == State.Paused) this.state = (State)((int)this.state ^ 1);
@@ -237,6 +244,31 @@ namespace Meadows.Scenes {
                     }
                 }
             }
+
+            var timeString = currentTime.ToString(@"hh\:mm");
+            var timeFont = this.opt; 
+            batch.DrawString(timeFont, $"Time: {timeString}", new Vector2(10, 10), Color.FloralWhite);
+
+            float overlayAlpha = 0f;
+            if (currentTime.TotalHours >= 18 || currentTime.TotalHours < 6)
+            {
+                overlayAlpha = 0.5f; 
+            }
+            else if (currentTime.TotalHours >= 6 && currentTime.TotalHours < 8)
+            {
+                overlayAlpha = 0.5f - (float)((currentTime.TotalHours - 6) / 2) * 0.5f;
+            }
+            else if (currentTime.TotalHours >= 16 && currentTime.TotalHours < 18)
+            {
+                overlayAlpha = (float)((currentTime.TotalHours - 16) / 2) * 0.5f;
+            }
+
+            if (overlayAlpha > 0f)
+            {
+                batch.Draw(whole, new Rectangle(0, 0, Main.Width, Main.Height), Color.Black * overlayAlpha);
+            }
+
+
 
             batch.End();
             base.Draw(batch, dt);
