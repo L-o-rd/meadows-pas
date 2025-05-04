@@ -87,6 +87,11 @@ namespace Meadows.Scenes {
             this.level.Add(new EItem(Tools.Sickle, (int) (15.5 * Tiles.Tile.Width), (int) (20.5 * Tiles.Tile.Height)));
             this.level.Add(new EItem(Tools.Shovel, (int) (14.5 * Tiles.Tile.Width), (int) (21.5 * Tiles.Tile.Height)));
 
+            this.level.Add(new NPC(
+                (int)(10.5f * Tiles.Tile.Width + 3 * Tiles.Tile.Width),
+                (int)(24.5f * Tiles.Tile.Height)
+            ));
+            
             Random rng = new Random(Environment.TickCount);
             GenerateBushes(rng, new Vector2(11, 4), new Vector2(28, 13));
             GenerateBushes(rng, new Vector2(15, 14), new Vector2(28, 17));
