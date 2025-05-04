@@ -22,7 +22,10 @@ namespace Meadows.Entities
         {
 
         }
-
+        public override bool Blocks(Entity e)
+        {
+            return true;
+        }
         public override void Draw(SpriteBatch batch)
         {
             _idleAnim.Draw(batch, new Vector2(
