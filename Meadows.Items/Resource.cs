@@ -26,5 +26,7 @@ namespace Meadows.Items {
         public static Resource Potato = new Plantable("Potato", 0, 60 * 5);
         public static Resource Carrot = new Plantable("Carrot", 6, 60 * 5);
         public static Resource Beetroot = new Plantable("Beetroot", 9, 60 * 5);
+        public static Resource RedBellPepper = new Plantable("RedBellPepper", 19, 60 * 5);
+        public static Resource Pumpkin = new Plantable("Pumpkin", 27, 60 * 5);
     }
 }
