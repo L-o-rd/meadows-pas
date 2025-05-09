@@ -6,7 +6,13 @@ namespace Meadows.Items {
     public class Inventory {
         public List<Item> Items { get; }
 
-        public Inventory() => this.Items = new List<Item>();
+        public int Gold { get; set; }
+
+        public Inventory()
+        {
+            Items = new List<Item>();
+            Gold = 0;
+        }
 
         public void Add(Item item) {
             Add(Items.Count, item);
