@@ -25,7 +25,6 @@ namespace Meadows.Scenes
 
         private readonly string invText = "Inventory";
         private readonly string text = "Paused";
-        private readonly string tradeText = "Trading";
         private readonly Option[] actions;
         private delegate void Option();
 
