@@ -20,10 +20,12 @@ namespace Meadows.Entities {
             this.y = y;
 
             this.health = 5 + RNG.Next(3);
-            var drop = RNG.Next(3);
+            var drop = RNG.Next(5);
             switch (drop) {
                 case 1: this.drop = Resources.Carrot; break;
                 case 2: this.drop = Resources.Beetroot; break;
+                case 3: this.drop = Resources.RedBellPepper; break;
+                case 4: this.drop = Resources.Pumpkin; break;
                 case 0: default: this.drop = Resources.Potato; break;
             }
         }
