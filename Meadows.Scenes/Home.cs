@@ -158,6 +158,34 @@ namespace Meadows.Scenes
             ).Any(e => e is NPC);
         }
 
+        private int GetSellPrice(Item item)
+        {
+            if (item is Tool tool)
+            {
+                return tool.Name switch
+                {
+                    "Shovel" => 40,
+                    "Sickle" => 60,
+                    _ => 0
+                };
+            }
+
+            if (item is ResourceItem resource)
+            {
+                return resource.Name switch
+                {
+                    "Potato" => 10,
+                    "Carrot" => 15,
+                    "Beetroot" => 20,
+                    "RedBellPepper" => 20,
+                    "Pumpkin" => 25,
+                    _ => 0
+                };
+            }
+
+            return 0;
+        }
+
         public override void Update(GameTime dt)
         {
             base.Update(dt);
@@ -268,8 +296,9 @@ namespace Meadows.Scenes
                 }
                 else if (currentTradeState == TradeState.BuyMenu)
                 {
-                    var itemsForSale = new List<Item>() { Tools.Sickle, Tools.Shovel };
-                    var optionsCount = itemsForSale.Count + 1; // +1 pt optiunea de exit
+                    var itemsForSale = new List<Item>() { Tools.Shovel, Tools.Sickle };
+                    var prices = new Dictionary<string, int> { { "Shovel", 100 }, { "Sickle", 200 } };
+                    var optionsCount = itemsForSale.Count + 1;
 
                     if (Utility.InputManager.IsKeyPressed(Keys.Down))
                         tradeSelect = (tradeSelect + 1) % optionsCount;
@@ -284,7 +313,14 @@ namespace Meadows.Scenes
                         }
                         else
                         {
-                            player.inventory.Add(itemsForSale[tradeSelect]);
+                            var item = itemsForSale[tradeSelect];
+                            int price = prices[item.Name];
+
+                            if (player.inventory.Gold >= price)
+                            {
+                                player.inventory.Gold -= price;
+                                player.inventory.Add(item);
+                            }
                         }
                     }
                 }
@@ -306,19 +342,17 @@ namespace Meadows.Scenes
                         }
                         else
                         {
+                            player.inventory.Gold += GetSellPrice(invItems[tradeSelect]);
                             invItems.RemoveAt(tradeSelect);
                             tradeSelect = Math.Min(tradeSelect, invItems.Count);
                         }
                     }
                 }
 
-
                 this.tradeDft += (float)dt.ElapsedGameTime.TotalMilliseconds * 0.01f;
                 this.tradeTs = 1.125f + (float)Math.Sin(this.tradeDft * 0.5f) * 0.125f;
             }
-
         }
-
 
         public override void Draw(SpriteBatch batch, GameTime dt)
         {
@@ -414,7 +448,6 @@ namespace Meadows.Scenes
                     }
                 }
             }
-
             else if (state == State.Trading)
             {
                 batch.Draw(whole, new Rectangle(0, 0, Main.Width, Main.Height), Color.Black * 0.35f);
@@ -422,23 +455,40 @@ namespace Meadows.Scenes
                 string titleText = "Trading";
                 Color titleColor = Color.Gold;
                 List<string> optionsToShow = tradingOptions.ToList();
+                List<int> prices = new List<int>();
 
                 if (currentTradeState == TradeState.BuyMenu)
                 {
                     titleText = "Buy Items";
                     titleColor = Color.LightGreen;
-                    optionsToShow = new List<string> { "Sickle", "Shovel", "Exit" };
+                    optionsToShow = new List<string> { "Shovel (100g)", "Sickle (200g)", "Exit" };
                 }
                 else if (currentTradeState == TradeState.SellMenu)
                 {
                     titleText = "Sell Items";
                     titleColor = Color.IndianRed;
-                    optionsToShow = player.inventory.Items.Select(i => i.Name).ToList();
+                    optionsToShow = player.inventory.Items.Select(i => {
+                        int sellPrice = GetSellPrice(i);
+                        return $"{i.Name} ({sellPrice}g)";
+                    }).ToList();
                     optionsToShow.Add("Exit");
                 }
 
+                //string goldText = $"Gold: {player.inventory.Gold}g";
+                //var goldSize = opt.MeasureString(goldText);
+                //batch.DrawString(opt, goldText,
+                //    new Vector2((Main.Width - goldSize.X) * 0.5f, 0.15f * Main.Height),
+                //    Color.Gold);
+
+                // Draw gold information at the top
+                string goldText = $"Gold: {player.inventory.Gold}g";
+                var goldSize = opt.MeasureString(goldText);
+                batch.DrawString(opt, goldText,
+                    new Vector2(Main.Width - goldSize.X - 20, 20),
+                    Color.Gold);
+
                 var size = title.MeasureString(titleText);
-                var position = new Vector2((Main.Width - size.X) * 0.5f, 0.1f * Main.Height);
+                var position = new Vector2((Main.Width - size.X) * 0.5f, 0.2f * Main.Height);
                 batch.DrawString(title, titleText, position, titleColor);
 
                 var py = 0f;
@@ -461,9 +511,6 @@ namespace Meadows.Scenes
                     py += size.Y + 0.075f * Main.Height;
                 }
             }
-
-
-
 
             batch.End();
             base.Draw(batch, dt);
