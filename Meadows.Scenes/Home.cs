@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Meadows.Entities;
@@ -342,8 +342,35 @@ namespace Meadows.Scenes
                         }
                         else
                         {
-                            player.inventory.Gold += GetSellPrice(invItems[tradeSelect]);
-                            invItems.RemoveAt(tradeSelect);
+                            var item = invItems[tradeSelect];
+                            bool sellAll = Keyboard.GetState().IsKeyDown(Keys.LeftShift) ||
+                                        Keyboard.GetState().IsKeyDown(Keys.RightShift);
+
+                            if (item is ResourceItem resource)
+                            {
+                                int sellPrice = GetSellPrice(resource);
+
+                                if (sellAll)
+                                {
+                                    player.inventory.Gold += sellPrice * resource.Count;
+                                    invItems.RemoveAt(tradeSelect);
+                                }
+                                else
+                                {
+                                    player.inventory.Gold += sellPrice;
+                                    resource.Count--;
+                                    if (resource.Count <= 0)
+                                    {
+                                        invItems.RemoveAt(tradeSelect);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                player.inventory.Gold += GetSellPrice(item);
+                                invItems.RemoveAt(tradeSelect);
+                            }
+
                             tradeSelect = Math.Min(tradeSelect, invItems.Count);
                         }
                     }
@@ -457,6 +484,9 @@ namespace Meadows.Scenes
                 List<string> optionsToShow = tradingOptions.ToList();
                 List<int> prices = new List<int>();
 
+                int startIndex = 0;
+                int visibleCount = 0;
+
                 if (currentTradeState == TradeState.BuyMenu)
                 {
                     titleText = "Buy Items";
@@ -467,24 +497,29 @@ namespace Meadows.Scenes
                 {
                     titleText = "Sell Items";
                     titleColor = Color.IndianRed;
-                    optionsToShow = player.inventory.Items.Select(i => {
-                        int sellPrice = GetSellPrice(i);
-                        return $"{i.Name} ({sellPrice}g)";
-                    }).ToList();
-                    optionsToShow.Add("Exit");
+
+                    var allItems = player.inventory.Items
+                        .Select(i => {
+                            int sellPrice = GetSellPrice(i);
+                            string countText = (i is ResourceItem res) ? $" ({res.Count})" : "";
+                            return $"{i.Name}{countText} ({sellPrice}g)";
+                        })
+                        .Concat(new[] { "Exit" })
+                        .ToList();
+
+                    visibleCount = Math.Min(3, allItems.Count);
+                    startIndex = Math.Max(0, Math.Min(tradeSelect - 1, allItems.Count - visibleCount));
+
+                    optionsToShow = allItems
+                        .Skip(startIndex)
+                        .Take(visibleCount)
+                        .ToList();
                 }
 
-                //string goldText = $"Gold: {player.inventory.Gold}g";
-                //var goldSize = opt.MeasureString(goldText);
-                //batch.DrawString(opt, goldText,
-                //    new Vector2((Main.Width - goldSize.X) * 0.5f, 0.15f * Main.Height),
-                //    Color.Gold);
-
-                // Draw gold information at the top
                 string goldText = $"Gold: {player.inventory.Gold}g";
                 var goldSize = opt.MeasureString(goldText);
                 batch.DrawString(opt, goldText,
-                    new Vector2(Main.Width - goldSize.X - 20, 20),
+                    new Vector2(20, Main.Height - goldSize.Y - 20),
                     Color.Gold);
 
                 var size = title.MeasureString(titleText);
@@ -495,7 +530,7 @@ namespace Meadows.Scenes
                 for (int i = 0; i < optionsToShow.Count; ++i)
                 {
                     size = opt.MeasureString(optionsToShow[i]);
-                    if (i == tradeSelect)
+                    if (i + startIndex == tradeSelect)
                     {
                         batch.DrawString(opt, optionsToShow[i],
                             new Vector2((float)Main.Width * 0.5f, 0.4f * Main.Height + py + size.Y * 0.5f),
@@ -510,6 +545,17 @@ namespace Meadows.Scenes
 
                     py += size.Y + 0.075f * Main.Height;
                 }
+            }
+
+
+            if (state != State.Trading)
+            {
+                float smallScale = 0.4f;
+                string goldAmountText = player.inventory.Gold.ToString();
+                var goldAmountSize = opt.MeasureString(goldAmountText) * smallScale;
+                batch.DrawString(opt, goldAmountText,
+                    new Vector2(20, 20),
+                    Color.Gold, 0f, Vector2.Zero, smallScale, SpriteEffects.None, 0f);
             }
 
             batch.End();
