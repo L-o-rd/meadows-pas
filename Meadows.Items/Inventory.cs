@@ -54,6 +54,26 @@ namespace Meadows.Items {
             }
         }
 
+        public bool HasGold(int amount)
+        {
+            return Gold >= amount;
+        }
+
+        public void AddGold(int amount)
+        {
+            Gold += amount;
+        }
+
+        public bool RemoveGold(int amount)
+        {
+            if (HasGold(amount))
+            {
+                Gold -= amount;
+                return true;
+            }
+            return false;
+        }
+
         public static readonly Texture2D HotbarSlotTexture = null;
         static Inventory() {
             int size = 38;
