@@ -491,7 +491,7 @@ namespace Meadows.Scenes
                 {
                     titleText = "Buy Items";
                     titleColor = Color.LightGreen;
-                    optionsToShow = new List<string> { "Shovel (100g)", "Sickle (200g)", "Exit" };
+                    optionsToShow = new List<string> { "Shovel --> 100G", "Sickle --> 200G", "Exit" };
                 }
                 else if (currentTradeState == TradeState.SellMenu)
                 {
@@ -502,7 +502,7 @@ namespace Meadows.Scenes
                         .Select(i => {
                             int sellPrice = GetSellPrice(i);
                             string countText = (i is ResourceItem res) ? $" ({res.Count})" : "";
-                            return $"{i.Name}{countText} ({sellPrice}g)";
+                            return $"{i.Name}{countText} --> {sellPrice}G";
                         })
                         .Concat(new[] { "Exit" })
                         .ToList();
