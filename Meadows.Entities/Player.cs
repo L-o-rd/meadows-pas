@@ -289,7 +289,7 @@ namespace Meadows.Entities {
 
             base.Draw(batch);
         }
-
+        public override bool Blocks(Entity e) => true;
         public override bool CanSwim() {
             return true;
         }

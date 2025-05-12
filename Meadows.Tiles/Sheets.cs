@@ -45,6 +45,10 @@ namespace Meadows {
         public Rectangle Source2(int x, int y, int actual) {
             return new Rectangle(x << 5, y << 5, actual, actual);
         }
+
+        public Rectangle Source3(int x, int y, int unitX, int unitY, int actualX, int actualY) {
+            return new Rectangle(x * unitX, y * unitY, actualX, actualY);
+        }
     }
 
     public class Sheets {

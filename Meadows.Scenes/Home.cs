@@ -75,6 +75,8 @@ namespace Meadows.Scenes
             }
         }
 
+        private NPC Sara;
+
         public Home()
         {
             this.whole = new Texture2D(Main.Graphics.GraphicsDevice, 1, 1);
@@ -112,10 +114,12 @@ namespace Meadows.Scenes
             this.level.Add(new EItem(Tools.Sickle, (int)(15.5 * Tiles.Tile.Width), (int)(20.5 * Tiles.Tile.Height)));
             this.level.Add(new EItem(Tools.Shovel, (int)(14.5 * Tiles.Tile.Width), (int)(21.5 * Tiles.Tile.Height)));
 
-            this.level.Add(new NPC(
-               (int)(10.5f * Tiles.Tile.Width + 3 * Tiles.Tile.Width),
+            Sara = new NPC(
+               (int)(13.5f * Tiles.Tile.Width),
                (int)(24.5f * Tiles.Tile.Height)
-           ));
+            );
+
+            this.level.Add(Sara);
 
             Random rng = new Random(Environment.TickCount);
             GenerateBushes(rng, new Vector2(11, 4), new Vector2(28, 13));
@@ -166,7 +170,7 @@ namespace Meadows.Scenes
                 {
                     "Shovel" => 40,
                     "Sickle" => 60,
-                    _ => 0
+                    _ => 10
                 };
             }
 
@@ -179,7 +183,7 @@ namespace Meadows.Scenes
                     "Beetroot" => 20,
                     "RedBellPepper" => 20,
                     "Pumpkin" => 25,
-                    _ => 0
+                    _ => 5
                 };
             }
 
@@ -210,6 +214,7 @@ namespace Meadows.Scenes
                 {
                     this.state = State.Trading;
                     this.tradeSelect = 0;
+                    Sara.SetPortrait(-1);
                 }
 
                 this.level.Update(dt);
@@ -342,7 +347,10 @@ namespace Meadows.Scenes
                         }
                         else
                         {
-                            player.inventory.Gold += GetSellPrice(invItems[tradeSelect]);
+                            var item = invItems[tradeSelect];
+                            var basePrice = GetSellPrice(invItems[tradeSelect]);
+                            if (item is ResourceItem res) basePrice *= res.Count;
+                            player.inventory.Gold += basePrice;
                             invItems.RemoveAt(tradeSelect);
                             tradeSelect = Math.Min(tradeSelect, invItems.Count);
                         }
@@ -451,6 +459,7 @@ namespace Meadows.Scenes
             else if (state == State.Trading)
             {
                 batch.Draw(whole, new Rectangle(0, 0, Main.Width, Main.Height), Color.Black * 0.35f);
+                Sara.Portrait(batch, 10, 100);
 
                 string titleText = "Trading";
                 Color titleColor = Color.Gold;
@@ -469,6 +478,10 @@ namespace Meadows.Scenes
                     titleColor = Color.IndianRed;
                     optionsToShow = player.inventory.Items.Select(i => {
                         int sellPrice = GetSellPrice(i);
+                        if (i is ResourceItem res) {
+                            sellPrice *= res.Count;
+                        }
+
                         return $"{i.Name} ({sellPrice}g)";
                     }).ToList();
                     optionsToShow.Add("Exit");
@@ -492,23 +505,59 @@ namespace Meadows.Scenes
                 batch.DrawString(title, titleText, position, titleColor);
 
                 var py = 0f;
-                for (int i = 0; i < optionsToShow.Count; ++i)
-                {
-                    size = opt.MeasureString(optionsToShow[i]);
-                    if (i == tradeSelect)
-                    {
-                        batch.DrawString(opt, optionsToShow[i],
-                            new Vector2((float)Main.Width * 0.5f, 0.4f * Main.Height + py + size.Y * 0.5f),
-                            Color.LightGreen, 0f, size * 0.5f, tradeTs, SpriteEffects.None, 0f);
-                    }
-                    else
-                    {
-                        batch.DrawString(opt, optionsToShow[i],
-                            new Vector2((Main.Width - size.X) * 0.5f, 0.4f * Main.Height + py),
-                            Color.FloralWhite);
-                    }
+                if (currentTradeState == TradeState.SellMenu) {
+                    if (optionsToShow.Count > 3) {
+                        var last = optionsToShow.Last();
+                        var sliceSize = Math.Min(2, optionsToShow.Count - tradeSelect - 1);
+                        optionsToShow = optionsToShow.Slice(Math.Min(tradeSelect, optionsToShow.Count - 1), sliceSize);
+                        if ((optionsToShow.Count == 0) || (optionsToShow.Last() != last))
+                            optionsToShow.Add(last);
 
-                    py += size.Y + 0.075f * Main.Height;
+                        for (int i = 0; i < optionsToShow.Count; ++i) {
+                            size = opt.MeasureString(optionsToShow[i]);
+                            if (i == 0) {
+                                batch.DrawString(opt, optionsToShow[i],
+                                    new Vector2((float)Main.Width * 0.5f, 0.4f * Main.Height + py + size.Y * 0.5f),
+                                    Color.LightGreen, 0f, size * 0.5f, tradeTs, SpriteEffects.None, 0f);
+                            } else {
+                                batch.DrawString(opt, optionsToShow[i],
+                                    new Vector2((Main.Width - size.X) * 0.5f, 0.4f * Main.Height + py),
+                                    Color.FloralWhite);
+                            }
+
+                            py += size.Y + 0.075f * Main.Height;
+                        }
+                    } else {
+                        for (int i = 0; i < optionsToShow.Count; ++i) {
+                            size = opt.MeasureString(optionsToShow[i]);
+                            if (i == tradeSelect) {
+                                batch.DrawString(opt, optionsToShow[i],
+                                    new Vector2((float)Main.Width * 0.5f, 0.4f * Main.Height + py + size.Y * 0.5f),
+                                    Color.LightGreen, 0f, size * 0.5f, tradeTs, SpriteEffects.None, 0f);
+                            } else {
+                                batch.DrawString(opt, optionsToShow[i],
+                                    new Vector2((Main.Width - size.X) * 0.5f, 0.4f * Main.Height + py),
+                                    Color.FloralWhite);
+                            }
+
+                            py += size.Y + 0.075f * Main.Height;
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < optionsToShow.Count; ++i) {
+                        size = opt.MeasureString(optionsToShow[i]);
+                        if (i == tradeSelect) {
+                            batch.DrawString(opt, optionsToShow[i],
+                                new Vector2((float)Main.Width * 0.5f, 0.4f * Main.Height + py + size.Y * 0.5f),
+                                Color.LightGreen, 0f, size * 0.5f, tradeTs, SpriteEffects.None, 0f);
+                        } else {
+                            batch.DrawString(opt, optionsToShow[i],
+                                new Vector2((Main.Width - size.X) * 0.5f, 0.4f * Main.Height + py),
+                                Color.FloralWhite);
+                        }
+
+                        py += size.Y + 0.075f * Main.Height;
+                    }
                 }
             }
 

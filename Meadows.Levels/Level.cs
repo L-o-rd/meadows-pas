@@ -154,7 +154,11 @@ namespace Meadows.Levels {
         }
 
         public bool Passable(int xt, int yt, Entity e) {
-            return GetTile(xt, yt).Passable;
+            var tile = GetTile(xt, yt);
+            if (tile.Swimmable && !e.CanSwim())
+                return false;
+
+            return tile.Passable;
         }
 
         private List<Entity> _rows = new List<Entity>();
