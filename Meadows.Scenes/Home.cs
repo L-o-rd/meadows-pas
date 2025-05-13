@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Meadows.Entities;
@@ -365,9 +365,40 @@ namespace Meadows.Scenes
                         {
                             var item = invItems[tradeSelect];
                             var basePrice = GetSellPrice(invItems[tradeSelect]);
-                            if (item is ResourceItem res) basePrice *= res.Count;
-                            player.inventory.Gold += basePrice;
-                            invItems.RemoveAt(tradeSelect);
+
+                            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift))
+                            {
+                                // Sell entire stack
+                                if (item is ResourceItem res)
+                                {
+                                    player.inventory.Gold += basePrice * res.Count;
+                                    invItems.RemoveAt(tradeSelect);
+                                }
+                                else
+                                {
+                                    player.inventory.Gold += basePrice;
+                                    invItems.RemoveAt(tradeSelect);
+                                }
+                            }
+                            else
+                            {
+                                // Sell single item
+                                if (item is ResourceItem res)
+                                {
+                                    player.inventory.Gold += basePrice;
+                                    res.Count--;
+                                    if (res.Count <= 0)
+                                    {
+                                        invItems.RemoveAt(tradeSelect);
+                                    }
+                                }
+                                else
+                                {
+                                    player.inventory.Gold += basePrice;
+                                    invItems.RemoveAt(tradeSelect);
+                                }
+                            }
+
                             tradeSelect = Math.Min(tradeSelect, invItems.Count);
                         }
                     }
@@ -486,20 +517,23 @@ namespace Meadows.Scenes
                 {
                     titleText = "Buy Items";
                     titleColor = Color.LightGreen;
-                    optionsToShow = new List<string> { "Shovel (100g)", "Sickle (200g)", "Exit" };
+                    optionsToShow = new List<string> { "Shovel - 100G", "Sickle - 200G", "Exit" };
                 }
                 else if (currentTradeState == TradeState.SellMenu)
                 {
                     titleText = "Sell Items";
                     titleColor = Color.IndianRed;
-                    optionsToShow = player.inventory.Items.Select(i => {
-                        int sellPrice = GetSellPrice(i);
-                        if (i is ResourceItem res) {
-                            sellPrice *= res.Count;
-                        }
 
-                        return $"{i.Name} ({sellPrice}g)";
+                    optionsToShow = player.inventory.Items.Select(i =>
+                    {
+                        int sellPricePerUnit = GetSellPrice(i);
+                        if (i is ResourceItem res)
+                        {
+                            return $"{i.Name} ({res.Count}) - {sellPricePerUnit}G";
+                        }
+                        return $"{i.Name} - {sellPricePerUnit}G";
                     }).ToList();
+
                     optionsToShow.Add("Exit");
                 }
 
