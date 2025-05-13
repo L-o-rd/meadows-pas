@@ -23,7 +23,7 @@ Proiectul serveste si ca **demonstratie practica** a folosirii paradigmelor de p
 
 ## Functionalitati implementate
 
-- **Mişcare libera** pe harta jocului (atat pe uscat cat si in apa)
+- **Miscare libera** pe harta jocului (atat pe uscat cat si in apa)
 - **Sistem de iteme**: fiecare item are damage propriu
 - **Colectare si folosire iteme** (hotbar functional)
 - **Interactiune cu plante** (2 tipuri): se pot distruge si ofera drop-uri
@@ -32,11 +32,24 @@ Proiectul serveste si ca **demonstratie practica** a folosirii paradigmelor de p
 - **Interfata minimalista**: bara de iteme jos pe ecran (stil Minecraft)
 
 ## Demo and Screenshots
+![image](https://github.com/user-attachments/assets/89f2e7e3-1e6b-4191-9d6a-417ec0c372ae)
+![image](https://github.com/user-attachments/assets/4bd58e7e-bd26-4871-851f-dff1cbdee2f8)
+![image](https://github.com/user-attachments/assets/16eee412-0ea6-492f-a17c-b2fe314c022b)
+![image](https://github.com/user-attachments/assets/55b89b0f-b551-451a-9104-e8e9764882c1)
+![image](https://github.com/user-attachments/assets/02e31017-6abc-4afb-b107-91534923b866)
+![image](https://github.com/user-attachments/assets/a279e95c-33d5-4534-a808-22c64470e549)
+![image](https://github.com/user-attachments/assets/48c7aa48-8fdd-4dc8-bab4-2c7c1f4e3cf6)
+![image](https://github.com/user-attachments/assets/18b0364f-b96d-4602-b517-02aee48e2cfb)
+![image](https://github.com/user-attachments/assets/746f4ad8-f605-46fa-91b1-2dcc389c6b02)
+![image](https://github.com/user-attachments/assets/b8e6dc7f-7861-435d-8f04-6557b5fdc932)
+![image](https://github.com/user-attachments/assets/9c74131a-f682-4755-9604-ec85cb8b4205)
+![image](https://github.com/user-attachments/assets/eb98e94b-2c42-4123-9928-2cda9b1fba8e)
+![image](https://github.com/user-attachments/assets/158011d7-e49c-47ff-bfac-930d06ff036c)
 
-_Jucatorul navigheaza prin harta si colecteaza iteme_
- 
-_Plantare manuala a unei plante distruse anterior_
- 
-_Bara de iteme functionala in partea de jos a ecranului_
 
 ## 👨‍💻 Autori
+- Mușat Fabian
+- Poenaru Andrei
+- Rădoi Dragoș
+- Răican Mihai
+- Avrămescu Isaac
