@@ -32,6 +32,7 @@ Proiectul serveste si ca **demonstratie practica** a folosirii paradigmelor de p
 - **Interfata minimalista**: bara de iteme jos pe ecran (stil Minecraft)
 
 ## Demo and Screenshots
+[Demo - YouTube](https://youtu.be/N2hCqTlrH2I)
 <img src="https://github.com/user-attachments/assets/89f2e7e3-1e6b-4191-9d6a-417ec0c372ae" width="400" alt="Meadows Screenshot 1">
 <img src="https://github.com/user-attachments/assets/4bd58e7e-bd26-4871-851f-dff1cbdee2f8" width="400" alt="Meadows Screenshot 2">
 <img src="https://github.com/user-attachments/assets/16eee412-0ea6-492f-a17c-b2fe314c022b" width="400" alt="Meadows Screenshot 3">
