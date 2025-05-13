@@ -32,7 +32,7 @@ Proiectul serveste si ca **demonstratie practica** a folosirii paradigmelor de p
 - **Interfata minimalista**: bara de iteme jos pe ecran (stil Minecraft)
 
 ## Demo and Screenshots
-[Demo - YouTube](https://youtu.be/N2hCqTlrH2I)
+
 <img src="https://github.com/user-attachments/assets/89f2e7e3-1e6b-4191-9d6a-417ec0c372ae" width="400" alt="Meadows Screenshot 1">
 <img src="https://github.com/user-attachments/assets/4bd58e7e-bd26-4871-851f-dff1cbdee2f8" width="400" alt="Meadows Screenshot 2">
 <img src="https://github.com/user-attachments/assets/16eee412-0ea6-492f-a17c-b2fe314c022b" width="400" alt="Meadows Screenshot 3">
@@ -46,7 +46,9 @@ Proiectul serveste si ca **demonstratie practica** a folosirii paradigmelor de p
 <img src="https://github.com/user-attachments/assets/9c74131a-f682-4755-9604-ec85cb8b4205" width="400" alt="Meadows Screenshot 11">
 <img src="https://github.com/user-attachments/assets/eb98e94b-2c42-4123-9928-2cda9b1fba8e" width="400" alt="Meadows Screenshot 12">
 <img src="https://github.com/user-attachments/assets/158011d7-e49c-47ff-bfac-930d06ff036c" width="400" alt="Meadows Screenshot 13">
+<img src="https://github.com/user-attachments/assets/4d0f246d-63bb-451f-8b48-8e632cc4b54f" width="400" alt="Gif optimizat">  
 
+[Demo - YouTube](https://youtu.be/N2hCqTlrH2I)
 
 ## 👨‍💻 Autori
 - Mușat Fabian
