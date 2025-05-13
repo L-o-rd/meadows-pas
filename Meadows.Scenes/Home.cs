@@ -28,6 +28,13 @@ namespace Meadows.Scenes
         private readonly Option[] actions;
         private delegate void Option();
 
+        private TimeSpan currentTime = new TimeSpan(6, 0, 0);
+        private const double daySpeed = 180.0;
+        private GameClock clock;
+        private Texture2D dateBoard;
+        private Texture2D day_night_clock;
+        private Texture2D arrow;
+
         private readonly string[] options = {
             "Continue", "Main Menu"
         };
@@ -114,6 +121,7 @@ namespace Meadows.Scenes
             this.level.Add(new EItem(Tools.Sickle, (int)(15.5 * Tiles.Tile.Width), (int)(20.5 * Tiles.Tile.Height)));
             this.level.Add(new EItem(Tools.Shovel, (int)(14.5 * Tiles.Tile.Width), (int)(21.5 * Tiles.Tile.Height)));
 
+            this.clock = new GameClock();
             Sara = new NPC(
                (int)(13.5f * Tiles.Tile.Width),
                (int)(24.5f * Tiles.Tile.Height)
@@ -130,6 +138,9 @@ namespace Meadows.Scenes
         {
             this.title = Main.Contents.Load<SpriteFont>("Fonts/Logo");
             this.opt = Main.Contents.Load<SpriteFont>("Fonts/Option");
+            this.dateBoard = Main.Contents.Load<Texture2D>("Sprites/Box");
+            this.day_night_clock = Main.Contents.Load<Texture2D>("Sprites/Clock");
+            this.arrow = Main.Contents.Load<Texture2D>("Sprites/Arrow");
             Sound.Load(Main.Contents, "Collect", "Sounds/Collect", 20);
             Sound.Load(Main.Contents, "Hit", "Sounds/Hit", 20);
             this.state = State.Playing;
@@ -192,6 +203,10 @@ namespace Meadows.Scenes
 
         public override void Update(GameTime dt)
         {
+            currentTime += TimeSpan.FromMinutes(dt.ElapsedGameTime.TotalSeconds * (24 * 60 / daySpeed));
+
+            if (currentTime.TotalHours >= 24)
+                currentTime -= TimeSpan.FromHours(24);
             base.Update(dt);
 
             if (Utility.InputManager.IsKeyPressed(Keys.Escape))
@@ -201,6 +216,7 @@ namespace Meadows.Scenes
                 else
                     this.state = State.Playing;
             }
+            this.clock.Update(dt);
 
             if (Utility.InputManager.IsKeyPressed(Keys.I) &&
                 (this.state == State.Playing || this.state == State.Inventory))
@@ -368,6 +384,76 @@ namespace Meadows.Scenes
             var oy = (this.player.y - (Main.Height >> 1));
             var ox = (this.player.x - (Main.Width >> 1));
             this.level.Draw(batch, ox, oy);
+            //
+            float globalScale = 0.6f;
+
+            int panelWidth = 123;
+            int panelHeight = 107;
+            int clockWidth = 71;
+            int clockHeight = 107;
+
+            float scaledPanelWidth = panelWidth * globalScale;
+            float scaledPanelHeight = panelHeight * globalScale;
+            float scaledClockWidth = clockWidth * globalScale;
+            float scaledClockHeight = clockHeight * globalScale;
+
+            float panelX = Main.Width - scaledPanelWidth - 10f;
+            float panelY = 10f;
+
+            float clockX = panelX - scaledClockWidth;
+            float clockY = panelY;
+
+            float scale = 0.45f * globalScale;
+
+            string time = clock.GetTimeString();
+            string dayLabel = clock.GetDayLabel();
+            string dateStr = clock.GetDateString();
+
+            Vector2 timeSize = opt.MeasureString(time) * scale;
+            Vector2 daySize = opt.MeasureString(dayLabel) * scale;
+            Vector2 dateSize = opt.MeasureString(dateStr) * scale;
+
+            float centerX = panelX + scaledPanelWidth / 2f;
+            float totalTextHeight = timeSize.Y + daySize.Y + dateSize.Y;
+            float spacingY = (scaledPanelHeight - totalTextHeight) / 4f;
+
+            float timeY = panelY + spacingY;
+            float dayY = timeY + timeSize.Y + spacingY;
+            float dateY = dayY + daySize.Y + spacingY;
+
+            batch.Draw(this.day_night_clock, new Vector2(clockX, clockY), null, Color.White, 0f, Vector2.Zero, globalScale, SpriteEffects.None, 0f);
+            batch.Draw(this.dateBoard, new Vector2(panelX, panelY), null, Color.White, 0f, Vector2.Zero, globalScale, SpriteEffects.None, 0f);
+
+            batch.DrawString(opt, time, new Vector2(centerX - timeSize.X / 2f, timeY), Color.LightYellow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            batch.DrawString(opt, dayLabel, new Vector2(centerX - daySize.X / 2f, dayY), Color.LightYellow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            batch.DrawString(opt, dateStr, new Vector2(centerX - dateSize.X / 2f, dateY), Color.LightYellow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            Texture2D arrowTex = this.arrow;
+
+            Vector2 clockCenter = new Vector2(clockX + scaledClockWidth, clockY + scaledClockHeight / 2f);
+
+            Vector2 arrowOrigin = new Vector2(arrowTex.Width - 6f, arrowTex.Height / 2f);
+
+            Vector2 arrowPos = clockCenter;
+
+            float timeNormalized = clock.GetNormalizedTime();
+            float shiftedTime = (timeNormalized + 0.25f) % 1f;
+            float sinValue = (float)Math.Sin(shiftedTime * MathHelper.TwoPi);
+            float angle = sinValue * MathHelper.PiOver2;
+
+            batch.Draw(
+                arrowTex,
+                arrowPos,
+                null,
+                Color.White,
+                angle,
+                arrowOrigin,
+                globalScale,
+                SpriteEffects.None,
+                0f
+            );
+
+            //
             this.player.inventory.DrawHotbars(batch, player.activeSlot);
             if (state == State.Paused)
             {
@@ -559,6 +645,28 @@ namespace Meadows.Scenes
                         py += size.Y + 0.075f * Main.Height;
                     }
                 }
+            }
+            float normalizedTime = clock.GetNormalizedTime(); 
+            double currentHour = normalizedTime * 24.0;
+
+            float overlayAlpha = 0f;
+
+            if (currentHour >= 18 || currentHour < 6)
+            {
+                overlayAlpha = 0.5f; 
+            }
+            else if (currentHour >= 6 && currentHour < 8)
+            {
+                overlayAlpha = 0.5f - (float)((currentHour - 6) / 2.0) * 0.5f;
+            }
+            else if (currentHour >= 16 && currentHour < 18)
+            {
+                overlayAlpha = (float)((currentHour - 16) / 2.0) * 0.5f;
+            }
+
+            if (overlayAlpha > 0f)
+            {
+                batch.Draw(whole, new Rectangle(0, 0, Main.Width, Main.Height), Color.Black * overlayAlpha);
             }
 
             batch.End();
