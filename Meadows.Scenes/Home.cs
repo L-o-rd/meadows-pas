@@ -578,7 +578,6 @@ namespace Meadows.Scenes
             }
             else
             {
-                //
                 float globalScale = 0.6f;
 
                 int panelWidth = 123;
@@ -647,29 +646,28 @@ namespace Meadows.Scenes
                     0f
                 );
 
-                //
-            }
-            float normalizedTime = clock.GetNormalizedTime(); 
-            double currentHour = normalizedTime * 24.0;
+                float normalizedTime = clock.GetNormalizedTime();
+                double currentHour = normalizedTime * 24.0;
 
-            float overlayAlpha = 0f;
+                float overlayAlpha = 0f;
 
-            if (currentHour >= 18 || currentHour < 6)
-            {
-                overlayAlpha = 0.5f; 
-            }
-            else if (currentHour >= 6 && currentHour < 8)
-            {
-                overlayAlpha = 0.5f - (float)((currentHour - 6) / 2.0) * 0.5f;
-            }
-            else if (currentHour >= 16 && currentHour < 18)
-            {
-                overlayAlpha = (float)((currentHour - 16) / 2.0) * 0.5f;
-            }
+                if (currentHour >= 18 || currentHour < 6)
+                {
+                    overlayAlpha = 0.5f;
+                }
+                else if (currentHour >= 6 && currentHour < 8)
+                {
+                    overlayAlpha = 0.5f - (float)((currentHour - 6) / 2.0) * 0.5f;
+                }
+                else if (currentHour >= 16 && currentHour < 18)
+                {
+                    overlayAlpha = (float)((currentHour - 16) / 2.0) * 0.5f;
+                }
 
-            if (overlayAlpha > 0f)
-            {
-                batch.Draw(whole, new Rectangle(0, 0, Main.Width, Main.Height), Color.Black * overlayAlpha);
+                if (overlayAlpha > 0f)
+                {
+                    batch.Draw(whole, new Rectangle(0, 0, Main.Width, Main.Height), Color.Black * overlayAlpha);
+                }
             }
 
             batch.End();
