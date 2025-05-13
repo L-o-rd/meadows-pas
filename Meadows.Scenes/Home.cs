@@ -118,7 +118,6 @@ namespace Meadows.Scenes
             this.level.Add(player);
             this.level.Add(new Tree(823, 5 * 32, Sheets.Outside, (int)(6.5f * 32), (int)(29.85f * 32)));
             this.level.Add(new Tree(22, 5 * 32, Sheets.Outside, (int)(3.85f * 32), (int)(24.85f * 32), 0.375f));
-            this.level.Add(new EItem(Tools.Sickle, (int)(15.5 * Tiles.Tile.Width), (int)(20.5 * Tiles.Tile.Height)));
 
             this.clock = new GameClock();
             Sara = new NPC(
