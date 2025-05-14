@@ -75,9 +75,9 @@ namespace Meadows.Scenes
                 for (var y = top.Y; y < bot.Y; ++y)
                 {
                     var prob = rng.NextDouble();
-                    if (rng.NextDouble() < 0.35) this.level.Add(new Bush(8, 17, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
-                    else if (rng.NextDouble() < 0.55) this.level.Add(new Bush(4, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
-                    else if (rng.NextDouble() < 0.75) this.level.Add(new Bush(2, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
+                    if (prob < 0.35) this.level.Add(new Bush(8, 17, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
+                    else if (prob < 0.55) this.level.Add(new Bush(4, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
+                    else if (prob < 0.75) this.level.Add(new Bush(2, 21, 32, Sheets.Trees, (int)((x + 0.5) * 32), (int)((y + 0.5) * 32)));
                 }
             }
         }
@@ -118,6 +118,7 @@ namespace Meadows.Scenes
             this.level.Add(player);
             this.level.Add(new Tree(823, 5 * 32, Sheets.Outside, (int)(6.5f * 32), (int)(29.85f * 32)));
             this.level.Add(new Tree(22, 5 * 32, Sheets.Outside, (int)(3.85f * 32), (int)(24.85f * 32), 0.375f));
+            this.level.Add(new EItem(Tools.Shovel, (int)(14.5 * Tiles.Tile.Width), (int)(21.5 * Tiles.Tile.Height)));
 
             this.clock = new GameClock();
             Sara = new NPC(
