@@ -1,6 +1,6 @@
 # 🌾 Meadows
 
-**Meadows** este un joc 2D sandbox dezvoltat in **C#** folosind framework-ul **MonoGame**, care imbina explorarea naturala cu interactiunea sistemica intr-un mediu stilizat pixel art. Proiectul are ca scop recrearea unui ecosistem simplificat in care jucatorul poate naviga, colecta resurse, interactiona cu plante si modifica mediul inconjurator prin actiuni directe.
+**Meadows** este un joc 2D sandbox dezvoltat in **C#** folosind framework-ul **MonoGame** inspirat de Minicraft by Notch si Stardew Valley by ConcernedApe, care imbina explorarea naturala cu interactiunea sistemica intr-un mediu stilizat pixel art. Proiectul are ca scop recrearea unui ecosistem simplificat in care jucatorul poate naviga, colecta resurse, interactiona cu plante si modifica mediul inconjurator prin actiuni directe.
 
 ## Concept
 
@@ -9,7 +9,7 @@
 - Colecteaza iteme cu caracteristici unice (ex: damage diferit).
 - Interactioneaza cu plante — le poate distruge si planta din nou.
 - Foloseste o bara de iteme (hotbar) pentru management rapid al resurselor.
-Proiectul serveste si ca **demonstratie practica** a folosirii paradigmelor de programare orientata pe componente, a utilizarii unui game loop personalizat, precum si a manipularii resurselor media prin MonoGame Content Pipeline.
+Proiectul serveste si ca **demonstratie practica** a folosirii paradigmelor de programare orientata pe obiecte, a utilizarii unui game loop personalizat, precum si a manipularii resurselor media prin MonoGame Content Pipeline.
 
 ## Tehnologii si librarii utilizate
 
