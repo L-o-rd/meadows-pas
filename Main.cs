@@ -55,7 +55,7 @@ namespace Meadows {
             Main.scenes[(int)Scenes.Scenes.Splash] = new Scenes.Splash();
             Main.scenes[(int)Scenes.Scenes.Menu] = new Scenes.Menu(this);
             Main.scenes[(int)Scenes.Scenes.Home] = new Scenes.Home();
-            Main.scene = Main.scenes[(int)Scenes.Scenes.Menu];
+            Main.scene = Main.scenes[(int)Scenes.Scenes.Splash];
             this.Resolution(1);
             base.Initialize();
         }
